@@ -1,0 +1,7 @@
+<launch>
+	<node name="sharp_node" pkg="jus_home_surveillance" type="sharp_publisher.py"/>
+	<node name="sharp_reader" pkg="jus_home_surveillance" type="sharp_subscriber.py" output="screen"/>
+	<node name="servoL" pkg="jus_home_surveillance" type="servoL.py" output="screen"/>
+	<node name="servoR" pkg="jus_home_surveillance" type="servoR.py" output="screen"/>
+	<node name="control" pkg="jus_home_surveillance" type="avoid_obstacles.py"/>
+</launch>
