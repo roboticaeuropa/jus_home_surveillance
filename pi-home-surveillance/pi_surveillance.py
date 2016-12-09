@@ -4,8 +4,8 @@
 
 # import the necessary packages
 from pyimagesearch.tempimage import TempImage
-from dropbox.client import DropboxOAuth2FlowNoRedirect
-from dropbox.client import DropboxClient
+#from dropbox.client import DropboxOAuth2FlowNoRedirect
+#from dropbox.client import DropboxClient
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import argparse
@@ -85,7 +85,7 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 	thresh = cv2.threshold(frameDelta, conf["delta_thresh"], 255,
 		cv2.THRESH_BINARY)[1]
 	thresh = cv2.dilate(thresh, None, iterations=2)
-	(cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+	(_,cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
 
 	# loop over the contours

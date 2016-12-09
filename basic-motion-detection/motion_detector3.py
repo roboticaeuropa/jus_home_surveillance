@@ -1,13 +1,13 @@
-# USAGE
-# python motion_detector.py
-# python motion_detector.py --video videos/example_01.mp4
-
+#!/usr/bin/python
 # import the necessary packages
 import argparse
 import datetime
 import imutils
 import time
 import cv2
+# OpenCV 3.0.1 in Ubuntu 16.04
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -15,10 +15,15 @@ ap.add_argument("-v", "--video", help="path to the video file")
 ap.add_argument("-a", "--min-area", type=int, default=500, help="minimum area size")
 args = vars(ap.parse_args())
 
+## Inicialize camera
+camera = PiCamera()
+camera.resolution = (640 , 480)
+
 # if the video argument is None, then we are reading from webcam
 if args.get("video", None) is None:
-	camera = cv2.VideoCapture(0)
-	time.sleep(0.25)
+	rawCapture = PiRGBArray(camera)
+	camera.capture(rawCapture , format="bgr")
+	frame = rawCapture.array
 
 # otherwise, we are reading from a video file
 else:
@@ -30,14 +35,14 @@ firstFrame = None
 # loop over the frames of the video
 while True:
 	# grab the current frame and initialize the occupied/unoccupied
-	# text
-	(grabbed, frame) = camera.read()
-	text = "Unoccupied"
+	rawCapture = PiRGBArray(camera)
+	camera.capture(rawCapture , format="bgr")
+	frame = rawCapture.array
 
 	# if the frame could not be grabbed, then we have reached the end
 	# of the video
-	if not grabbed:
-		break
+	#if not grabbed:
+	#	break
 
 	# resize the frame, convert it to grayscale, and blur it
 	frame = imutils.resize(frame, width=500)
@@ -57,9 +62,9 @@ while True:
 	# dilate the thresholded image to fill in holes, then find contours
 	# on thresholded image
 	thresh = cv2.dilate(thresh, None, iterations=2)
-	(cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+	(_,cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
-
+	
 	# loop over the contours
 	for c in cnts:
 		# if the contour is too small, ignore it
@@ -88,6 +93,5 @@ while True:
 	if key == ord("q"):
 		break
 
-# cleanup the camera and close any open windows
-camera.release()
+# close any open windows
 cv2.destroyAllWindows()
